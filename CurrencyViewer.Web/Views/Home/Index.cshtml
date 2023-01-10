@@ -5,7 +5,7 @@
 
 <div class="jumbotron">
     <h1>Currencies</h1>
-    <p class="lead">Simple app to show PLN rates in different currencies.</p>
+    <p class="lead">Simple app to show PLN exchange rates.</p>
 </div>
 
 @Html.DropDownList("currencies", Model.Select(m => new SelectListItem { Value = m.Code, Text = $"{m.Code} ({m.Name})" }), new { @class = "form-control" })
@@ -21,11 +21,11 @@
             <div class="modal-body">
                 <form>
                     <div class="form-group">
-                        <label for="recipient-name" class="control-label">Bid:</label>
+                        <label for="bid" class="control-label">Bid:</label>
                         <p id="bid"></p>
                     </div>
                     <div class="form-group">
-                        <label for="message-text" class="control-label">Ask:</label>
+                        <label for="ask" class="control-label">Ask:</label>
                         <p id="ask"></p>
                     </div>
                 </form>
