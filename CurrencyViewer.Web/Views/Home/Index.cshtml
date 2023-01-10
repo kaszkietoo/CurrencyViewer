@@ -1,0 +1,62 @@
+﻿@model IEnumerable<CurrencyViewer.Web.Models.Currency>
+@{
+    ViewBag.Title = "Home Page";
+}
+
+<div class="jumbotron">
+    <h1>Currencies</h1>
+    <p class="lead">Simple app to show PLN rates in different currencies.</p>
+</div>
+
+@Html.DropDownList("currencies", Model.Select(m => new SelectListItem { Value = m.Code, Text = $"{m.Code} ({m.Name})" }), new { @class = "form-control" })
+<button type="button" id="loadButton" data-loading-text="Loading..." class="btn btn-primary" autocomplete="off">Load currency rates</button>
+
+<div class="modal fade" id="ratesModal" tabindex="-1" role="dialog" aria-labelledby="ratesModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="ratesModalLabel"></h4>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="recipient-name" class="control-label">Bid:</label>
+                        <p id="bid"></p>
+                    </div>
+                    <div class="form-group">
+                        <label for="message-text" class="control-label">Ask:</label>
+                        <p id="ask"></p>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>                
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-sweetalert/1.0.1/sweetalert.min.js" integrity="sha512-MqEDqB7me8klOYxXXQlB4LaNf9V9S0+sG1i8LtPOYmHqICuEZ9ZLbyV3qIfADg2UJcLyCm4fawNiFvnYbcBJ1w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-sweetalert/1.0.1/sweetalert.min.css" integrity="sha512-hwwdtOTYkQwW2sedIsbuP1h0mWeJe/hFOfsvNKpRB3CkRxq8EW7QMheec1Sgd8prYxGm1OM9OZcGW7/GUud5Fw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
+    <script type="text/javascript">
+            $(document).ready(() => {
+                $('#loadButton').on('click', function () {
+                    let that = $(this);
+                    that.button('loading');
+                    let code = $('#currencies').val();
+                    let url = '@Url.Action("Rates", new { code = "-1" })';
+                    url = url.replace('-1', code);
+                    $.get(url).done((data) => {
+                        $('#ratesModalLabel').html(code);
+                        $('#bid').html(data.Rates[0].Bid);
+                        $('#ask').html(data.Rates[0].Ask);
+                        $('#ratesModal').modal('show');
+                    }).fail(() => { swal({ type: 'error', title: 'Cannot get rates!' }); })
+                        .always(() => { that.button('reset'); });
+                });
+            });
+    </script>
+}
